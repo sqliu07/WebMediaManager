@@ -127,44 +127,96 @@ function showMoviePreview(info, jobId, item) {
 // 轮询进度 + 完成状态
 function pollJobStatus(jobId, card, path) {
   const progress = card.querySelector('.progress');
-  let timer = setInterval(async () => {
+  let stopped = false;
+  let timer = null;
+
+  async function checkStatus() {
+    if (stopped) return;
     try {
-      const res = await fetch(`/api/job?id=${encodeURIComponent(jobId)}`);
+      const res = await fetch(`/api/job?id=${encodeURIComponent(jobId)}&t=${Date.now()}`, {
+        cache: "no-store"
+      });
+
+      // 如果 HTTP 状态异常
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // 尝试解析 JSON
       const data = await res.json();
+      console.log('[pollJobStatus]', data);
 
-      if (!data.running) {
-        clearInterval(timer);
-        const s = data.cache || {};
-        if (s.last_error) {
-          progress.textContent = `❌ 失败: ${s.last_error}`;
-          progress.style.color = 'red';
-        } else if (s.poster && s.nfo && s.fanart) {
-          progress.textContent = '✅ 刮削完成';
-          progress.style.color = 'green';
-        } else {
-          progress.textContent = '⚠️ 部分文件缺失';
-          progress.style.color = 'orange';
-        }
-        card.style.opacity = '1';
-
-        // ✅ 局部刷新此影片状态（轻量化）
-        refreshSingleCard(path);
-      } else {
-        const s = data.cache;
-        progress.textContent = `刮削中... ${[
-          s.poster ? '海报✓' : '海报…',
-          s.nfo ? 'NFO✓' : 'NFO…',
-          s.fanart ? '背景✓' : '背景…'
-        ].join(' ')}`;
+      // 如果返回异常
+      if (!data || typeof data.running === "undefined") {
+        throw new Error("invalid json");
       }
+
+      const s = data.cache || {};
+
+      // ✅ 刮削完成
+      if (!data.running) {
+        stopped = true;
+        clearInterval(timer);
+        if (s.poster && s.nfo && s.fanart) {
+          progress.textContent = "✅ 刮削完成";
+          progress.style.color = "lime";
+        } else if (s.poster || s.nfo || s.fanart) {
+          progress.textContent = "⚠️ 部分文件缺失";
+          progress.style.color = "orange";
+        } else {
+          progress.textContent = "❌ 未生成文件";
+          progress.style.color = "red";
+        }
+
+        // 局部刷新状态
+        refreshSingleCard(path);
+        return;
+      }
+
+      // ⏳ 仍在运行中
+      progress.textContent = `刮削中... ${[
+        s.poster ? "海报✓" : "海报…",
+        s.nfo ? "NFO✓" : "NFO…",
+        s.fanart ? "背景✓" : "背景…"
+      ].join(" ")}`;
     } catch (e) {
+      stopped = true;
       clearInterval(timer);
-      progress.textContent = '❌ 网络错误';
-      progress.style.color = 'red';
+      console.error("[pollJobStatus 错误]", e);
+      progress.textContent = "❌ 网络异常，请重试";
+      progress.style.color = "red";
     }
-  }, 2000);
+  }
+
+  // 启动定时轮询
+  timer = setInterval(checkStatus, 2000);
+  // 马上执行一次，避免延迟 2s 才显示
+  checkStatus();
 }
 
+async function refreshSingleCard(path) {
+  try {
+    const r = await fetch(`/api/scan?root=${encodeURIComponent(rootInput.value.trim())}`);
+    const j = await r.json();
+    if (!j.ok) return;
+
+    const updated = j.items.find(x => x.path === path);
+    if (!updated) return;
+
+    const card = document.querySelector(`.card[data-path="${path}"]`);
+    if (!card) return;
+
+    const s = [];
+    if (updated.has_poster) s.push('海报');
+    if (updated.has_nfo) s.push('NFO');
+    if (updated.has_fanart) s.push('背景');
+    const progress = card.querySelector('.progress');
+    if (progress) {
+      progress.textContent = `✅ ${s.join(' / ')}`;
+      progress.style.color = 'lime';
+    }
+  } catch (e) {
+    console.warn('[refreshSingleCard] 局部刷新失败', e);
+  }
+}
 
 // 标题清洗
 function guessTitle(filename) {
