@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MediaManager WebUI</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>MediaManager WebUI</h1>
+    <div class="controls">
+      <input id="root" placeholder="扫描根目录" />
+      <button id="btn-scan">扫描</button>
+    </div>
+  </header>
+  <main>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <dialog id="dlg-search">
+    <form method="dialog">
+      <h3>手动搜索 TMDB</h3>
+      <div id="current-file" style="font-size:13px;color:#888;margin-bottom:4px;"></div>
+      <input id="q" placeholder="片名，可手动修改" />
+      <input id="year" placeholder="年份(可选)" />
+      <menu>
+        <button id="btn-do-search" type="button">搜索</button>
+        <button value="cancel">关闭</button>
+      </menu>
+      <div id="results" class="results"></div>
+    </form>
+  </dialog>
+
+  <script>window.DEFAULT_ROOT="{{ default_root }}";</script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+body{font-family:sans-serif;margin:0}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #ddd}
+.controls{display:flex;gap:8px}
+.controls input{padding:8px;min-width:300px}
+.controls button{padding:8px 12px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;padding:16px}
+.card{border:1px solid #ddd;border-radius:10px;padding:10px;background:#fff}
+.title{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta{font-size:12px;color:#666}
+.actions{margin-top:8px}
+.result{display:grid;grid-template-columns:100px 1fr;gap:8px;border:1px solid #ddd;border-radius:8px;padding:6px}
+.result img{width:100px;height:150px;object-fit:cover}
+
+.poster img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.movie-info {
+  font-size: 14px;
+}
+
+.movie-info h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.movie-info p {
+  margin: 4px 0;
+}
+
+.rating {
+  color: #e67e22;
+  font-weight: bold;
+}

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<movie>
+  <title>凶器</title>
+  <originaltitle>Weapons</originaltitle>
+  <year>2025</year>
+  <plot>　　同一个班上除了一名孩子外，其余所有孩子在同一天晚上的同一时间神秘失踪，这让整个社区开始怀疑究竟是谁或什么导致了他们的失踪。</plot>
+  <ratings>
+    <rating>
+      <name>tmdb</name>
+      <value>7.4</value>
+      <max>10</max>
+    </rating>
+  </ratings>
+  <imdbid>tt26581740</imdbid>
+  <tmdbid>1078605</tmdbid>
+  <genre>恐怖</genre>
+  <genre>悬疑</genre>
+  <tag>witch</tag>
+  <tag>small town</tag>
+  <tag>pennsylvania, usa</tag>
+  <tag>ritual</tag>
+  <tag>cop</tag>
+  <tag>teacher</tag>
+  <tag>trance</tag>
+  <tag>witchcraft</tag>
+  <tag>missing child</tag>
+  <tag>multiple storylines</tag>
+  <tag>supernatural horror</tag>
+  <tag>mysterious disappearance</tag>
+  <tag>spell</tag>
+  <tag>psychological horror</tag>
+  <tag>mystery</tag>
+  <director>扎克·克雷格</director>
+  <writer>扎克·克雷格</writer>
+  <actors>
+    <actor>
+      <name>朱莉亚·加德纳</name>
+      <role>Justine</role>
+    </actor>
+    <actor>
+      <name>乔什·布洛林</name>
+      <role>Archer</role>
+    </actor>
+    <actor>
+      <name>奥尔登·埃伦赖希</name>
+      <role>Paul</role>
+    </actor>
+    <actor>
+      <name>奥斯汀·艾布拉姆斯</name>
+      <role>James</role>
+    </actor>
+    <actor>
+      <name>王汉斌</name>
+      <role>Marcus</role>
+    </actor>
+    <actor>
+      <name>艾米·马迪根</name>
+      <role>Gladys</role>
+    </actor>
+    <actor>
+      <name>Cary Christopher</name>
+      <role>Alex</role>
+    </actor>
+    <actor>
+      <name>托比·胡斯</name>
+      <role>Captain Ed</role>
+    </actor>
+    <actor>
+      <name>Whitmer Thomas</name>
+      <role>Alex's Dad</role>
+    </actor>
+    <actor>
+      <name>Callie Schuttera</name>
+      <role>Alex's Mom</role>
+    </actor>
+    <actor>
+      <name>琼·黛安·拉斐尔</name>
+      <role>Donna</role>
+    </actor>
+    <actor>
+      <name>Scarlett Sher</name>
+      <role>Narrator (voice)</role>
+    </actor>
+    <actor>
+      <name>Jason Turner</name>
+      <role>Counselor</role>
+    </actor>
+    <actor>
+      <name>Anny Jules</name>
+      <role>Parent #1</role>
+    </actor>
+    <actor>
+      <name>Ali Burch</name>
+      <role>Parent #2</role>
+    </actor>
+    <actor>
+      <name>Michael Gene Conti</name>
+      <role>Parent #3</role>
+    </actor>
+    <actor>
+      <name>Eric Jepson</name>
+      <role>Officer</role>
+    </actor>
+    <actor>
+      <name>Ronny Mathew</name>
+      <role>Liquor Store Clerk</role>
+    </actor>
+    <actor>
+      <name>梅丽莎·庞西奥</name>
+      <role>Archer's Wife</role>
+    </actor>
+    <actor>
+      <name>Luke Speakman</name>
+      <role>Matthew</role>
+    </actor>
+  </actors>
+</movie>
