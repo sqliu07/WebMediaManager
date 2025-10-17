@@ -1,2 +1,10 @@
 __pycache__/
-data/
+*.pyc
+*.pyo
+*.log
+.env
+.vscode/
+.idea/
+uploads/
+*.db
+*.sqlite3
