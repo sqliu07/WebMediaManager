@@ -48,7 +48,7 @@ pip install -r requirements.txt
 
 ### 2. 配置 TMDB API Key
 编辑 config.json：
-
+```
 {
   "tmdb": {
     "api_key": "你的TMDB_API_KEY",
@@ -58,6 +58,7 @@ pip install -r requirements.txt
     "root_dir": "data"
   }
 }
+```
 
 ### 3. 运行程序
 python app.py
