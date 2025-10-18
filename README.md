@@ -45,7 +45,9 @@ MediaManager/
 ## 安装与配置
 
 ### 1. 安装依赖
+```
 pip install -r requirements.txt
+```
 
 ### 2. 配置 TMDB API Key
 编辑 config.json：
@@ -62,7 +64,9 @@ pip install -r requirements.txt
 ```
 
 ### 3. 运行程序
+```
 python app.py
+```
 
 访问地址：
 http://127.0.0.1:8003
@@ -93,7 +97,7 @@ http://127.0.0.1:8003
 ## 日志系统说明
 
 日志保存在 log/ 目录，格式为：
-2025-10-18_21-30-05.log
+yyyy-mm-dd_hh-mm-ss.log
 
 日志内容示例：
 ```
