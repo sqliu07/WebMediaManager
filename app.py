@@ -3,6 +3,8 @@
 from logger import setup_logger
 logger = setup_logger()
 
+from subtitle import SubtitleDownloader
+
 from flask import Flask, jsonify, request, render_template, current_app
 from pathlib import Path
 import threading, json, time, traceback
@@ -28,6 +30,11 @@ else:
 
 tmdb = TMDBClient(CFG["tmdb"]["api_key"])
 ROOT_DIR_DEFAULT = CFG.get("scan", {}).get("root_dir", "data")
+sub_cfg = CFG.get("subtitle", {}) or {}
+ASSRT_TOKEN = sub_cfg.get("api_key", "")
+DEFAULT_SUB_LANG = sub_cfg.get("language", "chs")
+
+sub_dl = SubtitleDownloader(ASSRT_TOKEN) if ASSRT_TOKEN else None
 
 queue_lock = threading.Lock()
 active_jobs = {}
@@ -180,6 +187,46 @@ def api_job():
         traceback.print_exc()
         return jsonify({"running": False, "cache": {}, "error": str(e)})
 
+# -------------------------------------------------
+# 字幕搜索（ASSRT）
+# -------------------------------------------------
+@app.get("/api/subtitles/search")
+def api_sub_search():
+    if not sub_dl:
+        return jsonify({"ok": False, "error": "未配置 ASSRT Token"}), 400
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify({"ok": False, "error": "缺少 q"}), 400
+    try:
+        rows = sub_dl.search(q)
+        # 只返回必要字段，前端列个清单
+        return jsonify({"ok": True, "results": rows})
+    except Exception as e:
+        logger.exception("字幕搜索失败")
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+# -------------------------------------------------
+# 字幕下载（ASSRT）
+# body: { path: <movie_path>, sub_id: <int>, lang?: "chs" }
+# -------------------------------------------------
+@app.post("/api/subtitles/download")
+def api_sub_download():
+    if not sub_dl:
+        return jsonify({"ok": False, "error": "未配置 ASSRT Token"}), 400
+    data = request.get_json(force=True)
+    movie_path = Path(data.get("path", ""))
+    sub_id = int(data.get("sub_id", 0))
+    lang = data.get("lang") or DEFAULT_SUB_LANG or "chs"
+    if not movie_path or not sub_id:
+        return jsonify({"ok": False, "error": "缺少 path 或 sub_id"}), 400
+    try:
+        ret = sub_dl.download(sub_id, movie_path, preferred_lang=lang)
+        logger.info(f"[字幕下载] {ret}")
+        return jsonify({"ok": True, **ret})
+    except Exception as e:
+        logger.exception("字幕下载失败")
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 # -------------------------------------------------
 # 首页

@@ -7,3 +7,4 @@ beautifulsoup4==4.12.3
 lxml==5.2.2
 pillow==10.4.0
 python-slugify==8.0.4
+py7zr==0.20.8

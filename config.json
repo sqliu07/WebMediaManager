@@ -9,11 +9,10 @@
     "language": "zh-CN",
     "region": "CN"
   },
-  "subtitles": {
-    "use_assrt": false,
-    "assrt_token": "",
-    "use_chinesesubfinder": false,
-    "csf_webhook": "http://chinesesubfinder:19035/api/task/download"
+  "subtitle": {
+      "provider": "assrt",
+      "api_key": "9KAZ5nlJWgq6MlpxA4T0nlQIMI8o5i5O",
+      "language": "chs"
   },
   "web": {
     "bind": "0.0.0.0",

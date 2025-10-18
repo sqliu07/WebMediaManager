@@ -8,6 +8,7 @@ const year = document.getElementById('year');
 const btnDoSearch = document.getElementById('btn-do-search');
 const results = document.getElementById('results');
 const currentFile = document.getElementById('current-file');
+const btnDownloadSub = document.getElementById('btn-download-sub');
 
 rootInput.value = window.DEFAULT_ROOT || '';
 let currentItem = null;
@@ -65,6 +66,53 @@ btnDoSearch.onclick = async () => {
     alert('搜索出错: ' + e);
   }
 };
+
+btnDownloadSub.onclick = async () => {
+  if (!currentItem) return alert('未选定影片');
+
+  // 用当前右栏 title 作为关键字，或者用 guessTitle(currentItem.name)
+  const kv = q.value.trim().replace(/[._]+/g, ' ');
+  const query = kv.replace(/\(\d{4}\)/, '').trim();
+
+  try {
+    // 1) 搜索字幕
+    const sRes = await fetch(`/api/subtitles/search?q=${encodeURIComponent(query)}`);
+    const sJson = await sRes.json();
+    if (!sJson.ok) return alert(sJson.error || '字幕搜索失败');
+
+    const list = sJson.results || [];
+    if (!list.length) return alert('未找到可用字幕');
+
+    // 简易选择器：弹出一个 prompt 让用户输入序号
+    let menu = list
+      .slice(0, 10) // 只展示前 10 条
+      .map((it, i) => `[${i+1}] ${it.release} (${it.lang || ''})`)
+      .join('\n');
+
+    let idx = 0;
+    if (list.length > 1) {
+      const ans = prompt(`选择字幕序号：\n${menu}\n\n输入 1-${Math.min(list.length,10)}：`, '1');
+      if (!ans) return;
+      idx = Math.max(1, Math.min(parseInt(ans, 10) || 1, Math.min(list.length,10))) - 1;
+    }
+
+    const chosen = list[idx];
+    // 2) 下载
+    const dRes = await fetch('/api/subtitles/download', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ path: currentItem.path, sub_id: chosen.id, lang: 'chs' })
+    });
+    const dJson = await dRes.json();
+    if (!dJson.ok) return alert(dJson.error || '字幕下载失败');
+
+    alert(`字幕已保存：\n${dJson.saved}`);
+  } catch (e) {
+    console.error('字幕下载异常', e);
+    alert('字幕下载异常，请查看控制台日志');
+  }
+};
+
 
 // 渲染搜索结果
 function renderResults(list) {
