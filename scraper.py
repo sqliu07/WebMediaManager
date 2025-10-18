@@ -9,10 +9,6 @@ import re
 import shutil
 import xml.etree.ElementTree as ET
 
-import os
-os.environ["HTTP_PROXY"] = "http://127.0.0.1:7890"
-os.environ["HTTPS_PROXY"] = "http://127.0.0.1:7890"
-
 # ----------------------------------------
 # TMDB 客户端类：封装搜索 / 获取电影详情
 # ----------------------------------------
