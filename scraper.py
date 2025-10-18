@@ -1,4 +1,6 @@
 from nfo import write_movie_nfo
+from logger import setup_logger
+logger = setup_logger()
 
 from pathlib import Path
 import requests
@@ -6,6 +8,10 @@ import traceback
 import re
 import shutil
 import xml.etree.ElementTree as ET
+
+import os
+os.environ["HTTP_PROXY"] = "http://127.0.0.1:7890"
+os.environ["HTTPS_PROXY"] = "http://127.0.0.1:7890"
 
 # ----------------------------------------
 # TMDB 客户端类：封装搜索 / 获取电影详情
@@ -71,7 +77,7 @@ def safe_move(src: Path, dst: Path):
     try:
         shutil.move(str(src), str(dst))
     except Exception as e:
-        print(f"[重命名失败] {src} → {dst}: {e}")
+        logger.error(f"[重命名失败] {src} → {dst}: {e}")
 def scrape_one(movie_path: Path, meta: dict, cfg: dict, opts: dict):
     try:
         stage = opts.get('stage', 'all')
@@ -99,15 +105,15 @@ def scrape_one(movie_path: Path, meta: dict, cfg: dict, opts: dict):
                     poster_path = movie_dir / f"{new_name}.poster.jpg"
                     with open(poster_path, "wb") as f:
                         f.write(r.content)
-                    print(f"[海报下载] {poster_path}")
+                    logger.info(f"[海报下载] {poster_path}")
 
         # 生成 NFO
         if stage in ('nfo', 'all'):
             try:
                 write_movie_nfo(meta, movie_dir, basename=new_name) 
-                print(f"[NFO 生成] {movie_dir / 'movie.nfo'}")
+                logger.info(f"[NFO 生成] {movie_dir / 'movie.nfo'}")
             except Exception as e:
-                print(f"[NFO 生成失败] {e}")
+                logger.error(f"[NFO 生成失败] {e}")
 
         # 下载背景图
         if stage in ('fanart', 'all'):
@@ -118,8 +124,8 @@ def scrape_one(movie_path: Path, meta: dict, cfg: dict, opts: dict):
                     fanart_path = movie_dir / f"{new_name}.fanart.jpg"
                     with open(fanart_path, "wb") as f:
                         f.write(r.content)
-                    print(f"[背景下载] {fanart_path}")
+                    logger.info(f"[背景下载] {fanart_path}")
 
     except Exception as e:
-        print(f"[刮削错误] {movie_path}: {e}")
+        logger.error(f"[刮削错误] {movie_path}: {e}")
         traceback.print_exc()

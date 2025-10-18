@@ -9,3 +9,4 @@ uploads/
 *.db
 *.sqlite3
 data/
+log/

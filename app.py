@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from logger import setup_logger
+logger = setup_logger()
+
 from flask import Flask, jsonify, request, render_template, current_app
 from pathlib import Path
 import threading, json, time, traceback
@@ -21,7 +24,7 @@ else:
     CFG = {"tmdb": {"api_key": "", "language": "zh-CN"}, "scan": {"root_dir": "data"}}
     with open(cfg_path, "w", encoding="utf-8") as f:
         json.dump(CFG, f, indent=2, ensure_ascii=False)
-    print("⚠️ 未找到 config.json，已生成模板，请填写 TMDB API Key 后重启。")
+    logger.error("⚠️ 未找到 config.json，已生成模板，请填写 TMDB API Key 后重启。")
 
 tmdb = TMDBClient(CFG["tmdb"]["api_key"])
 ROOT_DIR_DEFAULT = CFG.get("scan", {}).get("root_dir", "data")
@@ -54,6 +57,12 @@ def api_scan():
                 "has_nfo": has_nfo,
                 "has_fanart": has_fanart
             })
+    logger.info(f'[扫描目录] 共 {len(items)} 部影片')
+    for idx, it in enumerate(items, start=1):
+        logger.info(
+            f'[{idx}] 片名: {it["name"]} | 路径: {it["path"]} | '
+            f'海报={it["has_poster"]}, NFO={it["has_nfo"]}, 背景={it["has_fanart"]}'
+        )
     return jsonify({"ok": True, "items": items})
 
 # -------------------------------------------------
@@ -83,7 +92,7 @@ def api_scrape():
         "lang": CFG["tmdb"]["language"]
     }
 
-    print(f"[启动任务] {movie_path}")
+    logger.info(f"[启动任务] {movie_path}")
     meta = tmdb.fetch_movie_full(tmdb_id, language=opts["lang"])
     job_id = str(movie_path)
 
@@ -116,12 +125,12 @@ def _run_scrape_job(app, movie_path: Path, meta: dict, opts: dict):
             scrape_one(movie_path, meta, CFG, {**opts, "stage": "nfo"})
             scrape_one(movie_path, meta, CFG, {**opts, "stage": "fanart"})
         except Exception as e:
-            print(f"[刮削失败] {movie_path}: {e}")
+            logger.error(f"[刮削失败] {movie_path}: {e}")
             traceback.print_exc()
         finally:
             with queue_lock:
                 active_jobs.pop(job_id, None)
-            print(f"[任务结束] {movie_path}")
+            logger.info(f"[任务结束] {movie_path}")
 
 # -------------------------------------------------
 # 查询任务状态
@@ -164,11 +173,10 @@ def api_job():
                 break
 
         cache = {"poster": poster, "nfo": nfo, "fanart": fanart}
-        print(f"[/api/job] 查找目录={[str(p) for p in search_dirs]} → cache={cache}")
-        print("[api_job返回]", {"running": running, "cache": cache})
+        logger.info(f"[/api/job] 查找目录={[str(p) for p in search_dirs]} → cache={cache}")
         return jsonify({"running": running, "cache": cache})
     except Exception as e:
-        print("[api_job异常]", e)
+        logger.info("[api_job异常]", e)
         traceback.print_exc()
         return jsonify({"running": False, "cache": {}, "error": str(e)})
 
